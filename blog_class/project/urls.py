@@ -16,10 +16,17 @@ Including another URLconf
 """
 from django.urls import path, include
 from django.contrib import admin
-from blog.views import WelcomeView, LoginView, LogoutView, SignupView, HomeView, DeleteBlogView, CreateBlogView, BlogsView, ViewBlogView, LikeBlogView, DislikeBlogView, EditBlogView, ViewBlogsView
+from blog.views import BlogList, BlogDetail, CommentList, CommentDetail, WelcomeView, LoginView, LogoutView, SignupView, HomeView, DeleteBlogView, CreateBlogView, ViewBlogView, LikeBlogView, DislikeBlogView, EditBlogView
 import debug_toolbar
 
+
 urlpatterns = [
+    
+    path('blogs/', BlogList.as_view(), name='blog-list'),
+    path('blogs/<int:pk>/', BlogDetail.as_view(), name='blog-detail'),
+    path('comments/', CommentList.as_view(), name='comment-list'),
+    path('comments/<int:pk>/', CommentDetail.as_view(), name='comment-detail'), 
+    
     path('admin/', admin.site.urls),
     path('__debug__/', include(debug_toolbar.urls)),
     path('', WelcomeView.as_view(), name='welcome'),
@@ -28,9 +35,7 @@ urlpatterns = [
     path('signup/', SignupView.as_view(), name='signup'),
     path('accounts/profile/', HomeView.as_view(), name='home'),
     path('create_blog/', CreateBlogView.as_view(), name='create_blog'),
-    path('blogs/', BlogsView.as_view(), name='blogs'),
     path('blog/<int:pk>/', ViewBlogView.as_view(), name='view_blog'),
-    path('blogs/<int:pk>/', ViewBlogsView.as_view(), name='view_blogs'),
     path('blog/<int:pk>/like/', LikeBlogView.as_view(), name='like_blog'),
     path('blog/<int:pk>/dislike/', DislikeBlogView.as_view(), name='dislike_blog'),
     path('blog/<int:pk>/edit/', EditBlogView.as_view(), name='edit_blog'),

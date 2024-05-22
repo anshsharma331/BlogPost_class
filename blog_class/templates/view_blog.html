@@ -46,43 +46,6 @@
         background-color: #f9f9f9;
     }
 
-    .comment-section {
-        margin-top: 20px;
-    }
-
-    .comment-form {
-        margin-top: 20px;
-    }
-
-    .toggle-comments-btn {
-        margin-top: 20px;
-    }
-
-    .comment {
-        margin-bottom: 10px;
-    }
-
-    .comment-author {
-        font-weight: bold;
-    }
-    .back-btn {
-        margin-top: 20px;
-    }
-
-    /* Button styling */
-    .edit-blog-btn {
-        margin-top: 10px;
-    }
-
-    /* New styles for comment container and form */
-    .comment-container {
-        margin-top: 20px;
-        padding: 20px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #f9f9f9;
-    }
-
     .comment-form textarea {
         width: 100%;
         margin-bottom: 10px;
@@ -105,7 +68,6 @@
         background-color: #0056b3;
     }
 
-    /* New styles for viewing comments */
     .comments {
         margin-top: 20px;
     }
@@ -122,22 +84,63 @@
         font-weight: bold;
         margin-bottom: 5px;
     }
+
+    /* Add styles for buttons */
+    .blog-buttons {
+        margin-top: 10px;
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .edit-blog-btn, .delete-blog-btn {
+        margin-left: 10px;
+        border-radius: 5px;
+        padding: 10px 20px;
+        cursor: pointer;
+    }
+
+    .edit-blog-btn {
+        background-color: yellow;
+        color: #000;
+    }
+
+    .delete-blog-btn {
+        background-color: red;
+        color: #fff;
+    }
+
+    .like-dislike-count .like-icon {
+        margin-right: 20px;
+    }
 </style>
+</style>
+
 <div class="container">
     <div class="blog-post">
-        <h2 class="blog-title">{{ blog.title }}</h2>
+        <div class="blog-header">
+            <h2 class="blog-title">{{ blog.title }}</h2>
+            <div class="like-dislike-count">
+                <span class="like-count">{{ blog.likes.count }}</span>
+                <span class="like-icon">&#128077;</span>
+                <span class="dislike-count">{{ blog.dislikes.count }}</span>
+                <span class="dislike-icon">&#128078;</span>
+            </div>
+        </div>
         <p class="blog-author">Author: {{ blog.user.username }}</p>
         <p class="blog-date">Created Date: {{ blog.created_at }}</p>
         <div class="blog-content">
             {{ blog.content | safe }}
         </div>
         {% if request.user == blog.user %}
-        <a href="{% url 'edit_blog' blog.id %}" class="btn btn-info edit-blog-btn">Edit Blog</a>
-        <a href="{% url 'delete_blog' blog.id %}" class="btn btn-info edit-blog-btn">Delete Blog</a>
+        <div class="blog-buttons">
+            <a href="{% url 'edit_blog' blog.id %}" class="btn btn-info edit-blog-btn">Edit</a>
+            <a href="{% url 'delete_blog' blog.id %}" class="btn btn-danger delete-blog-btn">Delete</a>
+        </div>
         {% endif %}
     </div>
 
     <!-- Comment container and form -->
+    {% if user.is_authenticated %}
     <div class="comment-container">
         <form class="comment-form" method="post" action="{% url 'view_blog' pk=blog.pk %}">
             {% csrf_token %}
@@ -145,18 +148,20 @@
             <button type="submit" class="submit-comment-btn">Submit Comment</button>
         </form>
     </div>
-
+    {% endif%}
     <!-- View all comments -->
     <div class="comments">
         <h3>All Comments</h3>
-        {% for comment in blog.comments.all %}
-        <div class="comment">
-            <p class="comment-author">Author: {{ comment.user.username }}</p>
-            <p>{{ comment.content }}</p>
-        </div>
-        {% empty %}
-        <p>No comments yet.</p>
-        {% endfor %}
+        {% if comments %}
+            {% for comment in comments %}
+                <div class="comment">
+                    <p class="comment-author">Author: {{ comment.user.username }}</p>
+                    <p>{{ comment.content }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No comments yet.</p>
+        {% endif %}
     </div>
 
     <a href="{% url 'home' %}" class="btn btn-success back-btn">&laquo; Back</a>
